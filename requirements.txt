@@ -6,3 +6,4 @@ openai
 aiofiles
 sqlalchemy
 psycopg
+pgvector
