@@ -5,7 +5,7 @@ fastapi
 openai
 aiofiles
 sqlalchemy
-psycopg
+psycopg_binary
 pgvector
 cohere
 infinity_client
