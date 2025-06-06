@@ -8,3 +8,4 @@ sqlalchemy
 psycopg
 pgvector
 cohere
+infinity_client
