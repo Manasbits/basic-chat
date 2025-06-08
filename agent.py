@@ -1,19 +1,29 @@
 from agno.agent import Agent
 from agno.playground import Playground, serve_playground_app
-from agno.models.openai import OpenAIChat  # Add this import
+from agno.models.openai import OpenAIChat
 from knowledge_base import knowledge_base
 from dotenv import load_dotenv
 import os
 
 load_dotenv()
 
-# Load knowledge base (set to False for production)
-knowledge_base.load(recreate=True)
+# Add debug logging before loading
+print(f"DATABASE_URL set: {bool(os.getenv('DATABASE_URL'))}")
+print(f"Loading knowledge base...")
+
+try:
+    # Load knowledge base (set to False for production)
+    knowledge_base.load(recreate=True)
+    print(f"Knowledge base loaded successfully")
+    print(f"Document chunks: {len(knowledge_base.document_chunks) if hasattr(knowledge_base, 'document_chunks') else 'Unknown'}")
+except Exception as e:
+    print(f"Error loading knowledge base: {e}")
+    raise
 
 agent = Agent(
     name="Knowledge Base Agent",
     agent_id="kb-agent", 
-    model=OpenAIChat(id="gpt-4o"),  # Add the model - this was missing!
+    model=OpenAIChat(id="gpt-4o"),
     knowledge=knowledge_base,
     search_knowledge=True,
     markdown=True,
