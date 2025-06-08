@@ -8,7 +8,7 @@ import os
 load_dotenv()
 
 # Load knowledge base (set to False for production)
-knowledge_base.load(recreate=False)
+knowledge_base.load(recreate=True)
 
 agent = Agent(
     name="Knowledge Base Agent",
