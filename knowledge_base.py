@@ -1,5 +1,9 @@
 import os
 from pathlib import Path
+from agno.knowledge.csv import CSVKnowledgeBase
+from agno.vectordb.pgvector import PgVector
+from dotenv import load_dotenv
+load_dotenv()
 
 # Add these debug lines
 print(f"Current working directory: {os.getcwd()}")
