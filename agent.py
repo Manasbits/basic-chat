@@ -4,6 +4,7 @@ from agno.models.openai import OpenAIChat
 from knowledge_base import knowledge_base
 from dotenv import load_dotenv
 import os
+
 import psycopg2
 from urllib.parse import urlparse
 from agno.memory.agent import AgentMemory
@@ -19,6 +20,16 @@ db_url = os.getenv("DATABASE_URL")
 # Add the database connection test function here
 def test_db_connection():
     try:
+import psycopg2  # Add this import
+from urllib.parse import urlparse  # Add this import
+
+load_dotenv()
+
+# Add the database connection test function here
+def test_db_connection():
+    try:
+        db_url = os.getenv("DATABASE_URL")
+
         if not db_url:
             print("DATABASE_URL not set!")
             return False
@@ -38,6 +49,7 @@ test_db_connection()
 
 # Add debug logging before loading
 print(f"DATABASE_URL set: {bool(db_url)}")
+print(f"DATABASE_URL set: {bool(os.getenv('DATABASE_URL'))}")
 print(f"Loading knowledge base...")
 
 try:
