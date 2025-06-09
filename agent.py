@@ -20,14 +20,6 @@ db_url = os.getenv("DATABASE_URL")
 # Add the database connection test function here
 def test_db_connection():
     try:
-import psycopg2  # Add this import
-from urllib.parse import urlparse  # Add this import
-
-load_dotenv()
-
-# Add the database connection test function here
-def test_db_connection():
-    try:
         db_url = os.getenv("DATABASE_URL")
 
         if not db_url:
