@@ -42,7 +42,7 @@ print(f"Loading knowledge base...")
 
 try:
     # Load knowledge base (set to False for production)
-    knowledge_base.load(recreate=True)
+    knowledge_base.load(recreate=False)
     print(f"Knowledge base loaded successfully")
     print(f"Document chunks: {len(knowledge_base.document_chunks) if hasattr(knowledge_base, 'document_chunks') else 'Unknown'}")
 except Exception as e:
