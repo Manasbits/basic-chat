@@ -3,7 +3,7 @@ from agno.playground import Playground, serve_playground_app
 from agno.models.openai import OpenAIChat
 from agno.models.google.gemini import Gemini
 from agno.models.anthropic import Claude
-from agno.models.huggingface import HuggingFace
+from agno.models.deepseek import DeepSeek
 from knowledge_base import knowledge_base
 from dotenv import load_dotenv
 import os
@@ -95,6 +95,7 @@ claude_agent = Agent(
     tools=[DuckDuckGoTools()],
     knowledge=knowledge_base,
     search_knowledge=True,
+    print_knowledge_search_results=True,
     show_tool_calls=True,
     markdown=True,
     memory=create_memory("claude_agent"),
@@ -104,27 +105,25 @@ claude_agent = Agent(
     read_chat_history=True,
 )
 
-# HuggingFace Deepseek Agent
-huggingface_agent = Agent(
-    name="Deepseek Knowledge Agent",
-    agent_id="Deepseek-kb-agent",
-    model=HuggingFace(
-        id="deepseek-ai/DeepSeek-R1-0528",
-        max_tokens=8000,
-        stream_output=False
-    ),
-    role="Expert financial assistant powered by Deepseek with access to knowledge base and web search capabilities",
+# DeepSeek Agent
+deepseek_agent = Agent(
+    name="DeepSeek Knowledge Agent",
+    agent_id="deepseek-kb-agent",
+    model=OpenAIChat(id="gpt-4o"),
+    reasoning_model=DeepSeek(id="deepseek-reasoner"),
+    role="Expert financial assistant powered by DeepSeek with access to knowledge base and web search capabilities",
     instructions=[
-        "Leverage Deepseek's capabilities for detailed financial analysis",
+        "Leverage DeepSeek's capabilities for detailed financial analysis",
         "Provide clear and concise financial recommendations"
     ],
     tools=[DuckDuckGoTools()],
     knowledge=knowledge_base,
     search_knowledge=True,
+    print_knowledge_search_results=True,
     show_tool_calls=True,
     markdown=True,
-    memory=create_memory("huggingface_agent"),
-    storage=create_storage("huggingface_agent"),
+    memory=create_memory("deepseek_agent"),
+    storage=create_storage("deepseek_agent"),
     add_history_to_messages=True,
     num_history_responses=5,
     read_chat_history=True,
@@ -132,9 +131,9 @@ huggingface_agent = Agent(
 
 # Create playground with all agents
 playground = Playground(
-    agents=[openai_agent, gemini_agent, claude_agent, huggingface_agent],
+    agents=[openai_agent, gemini_agent, claude_agent, deepseek_agent],
     name="Multi-Model Financial Analysis Playground",
-    description="Compare financial analysis capabilities across OpenAI GPT-4o, Google Gemini, Anthropic Claude, and Deepseek",
+    description="Compare financial analysis capabilities across OpenAI GPT-4o, Google Gemini, Anthropic Claude, and DeepSeek",
     app_id="multi-model-kb-agent-playground",
 )
 
