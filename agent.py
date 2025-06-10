@@ -126,7 +126,8 @@ deepseek_4o_agent = Agent(
     num_history_responses=5,
     read_chat_history=True,
     exponential_backoff=True,
-    delay_between_retries=2
+    delay_between_retries=5,
+    show_full_reasoning=True,
 )
 
 deepseek_4o_mini_agent = Agent(
