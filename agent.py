@@ -125,6 +125,8 @@ deepseek_4o_agent = Agent(
     add_history_to_messages=True,
     num_history_responses=5,
     read_chat_history=True,
+    exponential_backoff=True,
+    delay_between_retries=2
 )
 
 deepseek_4o_mini_agent = Agent(
@@ -147,6 +149,8 @@ deepseek_4o_mini_agent = Agent(
     add_history_to_messages=True,
     num_history_responses=5,
     read_chat_history=True,
+    exponential_backoff=True,
+    delay_between_retries=2
 )
 
 # Gemini Reasoning Agent
