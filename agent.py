@@ -105,8 +105,8 @@ claude_agent = Agent(
 )
 
 # DeepSeek Agent
-deepseek_agent = Agent(
-    name="DeepSeek Knowledge Agent",
+deepseek_4o_agent = Agent(
+    name="DeepSeek OpenAI",
     agent_id="deepseek-kb-agent",
     model=OpenAIChat(id="gpt-4o"),
     reasoning_model=DeepSeek(id="deepseek-reasoner"),
@@ -127,11 +127,56 @@ deepseek_agent = Agent(
     read_chat_history=True,
 )
 
+deepseek_4o_mini_agent = Agent(
+    name="DeepSeek OpenAI Mini",
+    agent_id="deepseek-kb-agent-mini",
+    model=OpenAIChat(id="gpt-4o-mini"),
+    reasoning_model=DeepSeek(id="deepseek-reasoner"),
+    role="Expert financial assistant powered by DeepSeek with access to knowledge base and web search capabilities",
+    instructions=[
+        "Leverage DeepSeek's capabilities for detailed financial analysis",
+        "Provide clear and concise financial recommendations"
+    ],
+    tools=[DuckDuckGoTools()],
+    knowledge=knowledge_base,
+    search_knowledge=True,
+    show_tool_calls=True,
+    markdown=True,
+    memory=create_memory("deepseek_agent"),
+    storage=create_storage("deepseek_agent"),
+    add_history_to_messages=True,
+    num_history_responses=5,
+    read_chat_history=True,
+)
+
+# Gemini Reasoning Agent
+deepseek_gemini_agent = Agent(
+    name="Deepseek Gemini",
+    agent_id="deepseek-gemini-agent",
+    model=Gemini(id="gemini-2.0-flash"),
+    reasoning_model=DeepSeek(id="deepseek-reasoner"),
+    role="Expert financial assistant powered by Gemini's reasoning capabilities with access to knowledge base and web search",
+    instructions=[
+        "Leverage Gemini's advanced reasoning capabilities for detailed financial analysis",
+        "Provide clear and concise financial recommendations with strong analytical backing"
+    ],
+    tools=[DuckDuckGoTools()],
+    knowledge=knowledge_base,
+    search_knowledge=True,
+    show_tool_calls=True,
+    markdown=True,
+    memory=create_memory("gemini_reasoning_agent"),
+    storage=create_storage("gemini_reasoning_agent"),
+    add_history_to_messages=True,
+    num_history_responses=5,
+    read_chat_history=True,
+)
+
 # Create playground with all agents
 playground = Playground(
-    agents=[openai_agent, gemini_agent, claude_agent, deepseek_agent],
+    agents=[openai_agent, gemini_agent, claude_agent, deepseek_4o_agent, deepseek_4o_mini_agent, deepseek_gemini_agent],
     name="Multi-Model Financial Analysis Playground",
-    description="Compare financial analysis capabilities across OpenAI GPT-4o, Google Gemini, Anthropic Claude, and DeepSeek",
+    description="Compare financial analysis capabilities across OpenAI GPT-4o, Google Gemini, Anthropic Claude, DeepSeek, and Gemini Reasoning",
     app_id="multi-model-kb-agent-playground",
 )
 
