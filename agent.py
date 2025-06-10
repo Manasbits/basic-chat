@@ -111,6 +111,7 @@ huggingface_agent = Agent(
     model=HuggingFace(
         id="deepseek-ai/DeepSeek-R1-0528",
         max_tokens=8000,
+        stream_output=False
     ),
     role="Expert financial assistant powered by Deepseek with access to knowledge base and web search capabilities",
     instructions=[
