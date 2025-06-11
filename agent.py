@@ -7,9 +7,8 @@ from agno.models.deepseek import DeepSeek
 from knowledge_base import knowledge_base
 from dotenv import load_dotenv
 import os
+import sys
 
-import psycopg2
-from urllib.parse import urlparse
 from agno.memory.agent import AgentMemory
 from agno.memory.db.postgres import PgMemoryDb
 from agno.storage.postgres import PostgresStorage
@@ -20,8 +19,19 @@ load_dotenv()
 # Get database URL
 db_url = os.getenv("DATABASE_URL")
 
-# ✅ FIXED: Load the knowledge base BEFORE creating agents
-knowledge_base.load(recreate=True)
+# ✅ Load the knowledge base with proper error handling
+try:
+    print("🔄 Loading knowledge base...")
+    knowledge_base.load(recreate=True)
+    print("✅ Knowledge base loaded successfully")
+except Exception as e:
+    print(f"❌ Failed to load knowledge base: {e}")
+    print("This might be due to:")
+    print("1. Database connection issues")
+    print("2. Missing pgvector extension")
+    print("3. Insufficient database permissions")
+    print("4. CSV file not found or corrupted")
+    sys.exit(1)
 
 # Configure shared memory and storage settings
 def create_memory(agent_name):
