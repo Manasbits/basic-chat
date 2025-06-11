@@ -20,6 +20,8 @@ load_dotenv()
 # Get database URL
 db_url = os.getenv("DATABASE_URL")
 
+# ✅ FIXED: Load the knowledge base BEFORE creating agents
+knowledge_base.load(recreate=True)
 
 # Configure shared memory and storage settings
 def create_memory(agent_name):
