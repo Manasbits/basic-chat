@@ -3,7 +3,7 @@ from pathlib import Path
 from agno.knowledge.csv import CSVKnowledgeBase
 from agno.vectordb.pgvector import PgVector
 from dotenv import load_dotenv
-import psycopg2
+import psycopg
 from urllib.parse import urlparse
 
 load_dotenv()
@@ -17,27 +17,19 @@ print(f"CSV file exists: {csv_path.exists()}")
 if csv_path.exists():
     print(f"CSV file size: {csv_path.stat().st_size} bytes")
 
-# Get and validate DATABASE_URL
-db_url = os.getenv("DATABASE_URL")
-print(f"Database URL configured: {db_url is not None}")
+# AWS RDS Database URL
+db_url = "postgresql+psycopg://mainuser:Manas123456@pgvector-db.czegegwgkvr5.ap-south-1.rds.amazonaws.com:5432/postgres?sslmode=require"
 
-if not db_url:
-    raise ValueError("DATABASE_URL environment variable is not set")
+print(f"Database URL configured: {db_url is not None}")
 
 # Test database connection
 def test_db_connection(db_url):
     try:
-        # Parse the URL to get connection parameters
-        parsed = urlparse(db_url)
+        # Convert URL for psycopg connection (remove +psycopg for direct connection)
+        test_url = db_url.replace("postgresql+psycopg://", "postgresql://")
         
-        # Connect using psycopg2 directly to test
-        conn = psycopg2.connect(
-            host=parsed.hostname,
-            port=parsed.port or 5432,
-            database=parsed.path[1:],  # Remove leading '/'
-            user=parsed.username,
-            password=parsed.password
-        )
+        # Connect using psycopg to test
+        conn = psycopg.connect(test_url)
         
         cursor = conn.cursor()
         
@@ -46,10 +38,10 @@ def test_db_connection(db_url):
         vector_ext = cursor.fetchone()
         print(f"PgVector extension installed: {vector_ext is not None}")
         
-        # Check if we can create tables
-        cursor.execute("SELECT has_table_privilege(current_user, 'information_schema.tables', 'CREATE');")
-        can_create = cursor.fetchone()[0]
-        print(f"Can create tables: {can_create}")
+        # Check database permissions
+        cursor.execute("SELECT current_user, current_database();")
+        user_db = cursor.fetchone()
+        print(f"Connected as user: {user_db[0]}, database: {user_db[1]}")
         
         cursor.close()
         conn.close()
