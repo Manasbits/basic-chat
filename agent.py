@@ -9,6 +9,7 @@ from dotenv import load_dotenv
 import os
 import sys
 from agno.tools.csv_toolkit import CsvTools
+from pathlib import Path
 
 from agno.memory.agent import AgentMemory
 from agno.memory.db.postgres import PgMemoryDb
