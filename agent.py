@@ -11,7 +11,7 @@ import sys
 from agno.tools.csv_toolkit import CsvTools
 from pathlib import Path
 import uvicorn
-
+from agno.playground import Playground 
 from agno.memory.agent import AgentMemory
 from agno.memory.db.postgres import PgMemoryDb
 from agno.storage.postgres import PostgresStorage
@@ -181,44 +181,14 @@ playground = Playground(
 # Get the app with proper configuration
 app = playground.get_app(use_async=True, prefix="/v1")
 
-# Add CORS middleware
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],  # In production, specify your domain
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-# Add health check endpoints
-@app.get("/health")
-async def health_check():
-    return {"status": "healthy", "message": "Financial Analysis Playground is running"}
-
-@app.get("/")
-async def root():
-    return {"message": "Financial Analysis Playground", "status": "running", "agents": 4}
-
-# Add a test endpoint to verify the playground is working
-@app.get("/test")
-async def test_endpoint():
-    return {
-        "message": "Test endpoint working",
-        "playground_endpoints": [
-            "/v1/playground/status",
-            "/v1/playground/agents",
-            "/v1/playground/agents/chat"
-        ]
-    }
-
 # For production deployment
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 7777))
     host = os.getenv("HOST", "0.0.0.0")
     
-    # Fix: Use the correct module name or use the app directly
-    serve_playground_app(
-        app,  # Pass the app directly instead of string reference
+    # Use playground.serve() instead of serve_playground_app
+    playground.serve(
+        app="__main__:app",  # Reference to the app in this module
         reload=False,
         port=port,
         host=host
