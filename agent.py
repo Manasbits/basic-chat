@@ -16,6 +16,7 @@ from agno.memory.agent import AgentMemory
 from agno.memory.db.postgres import PgMemoryDb
 from agno.storage.postgres import PostgresStorage
 from agno.tools.duckduckgo import DuckDuckGoTools
+from fastapi.middleware.cors import CORSMiddleware
 
 load_dotenv()
 
