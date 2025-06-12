@@ -8,6 +8,7 @@ from knowledge_base import knowledge_base
 from dotenv import load_dotenv
 import os
 import sys
+from agno.tools.csv_toolkit import CsvTools
 
 from agno.memory.agent import AgentMemory
 from agno.memory.db.postgres import PgMemoryDb
@@ -53,45 +54,6 @@ def create_storage(agent_name):
         auto_upgrade_schema=True
     )
 
-# OpenAI GPT-4o Agent
-openai_agent = Agent(
-    name="OpenAI Knowledge Agent",
-    agent_id="openai-kb-agent", 
-    model=OpenAIChat(id="gpt-4o"),
-    role="Expert financial assistant powered by OpenAI GPT-4o with access to knowledge base and web search capabilities",
-    instructions="hi",
-    tools=[DuckDuckGoTools()],
-    knowledge=knowledge_base,
-    search_knowledge=True,
-    show_tool_calls=True,
-    markdown=True,
-    memory=create_memory("openai_agent"),
-    storage=create_storage("openai_agent"),
-    add_history_to_messages=True,
-    num_history_responses=5,
-    read_chat_history=True,
-)
-
-# Google Gemini Agent
-gemini_agent = Agent(
-    name="Gemini Knowledge Agent",
-    agent_id="gemini-kb-agent",
-    model=Gemini(id="gemini-2.0-flash"),
-    role="Expert financial assistant powered by Google Gemini with access to knowledge base and web search capabilities",
-    instructions=[
-        "Provide detailed reasoning for financial recommendations using Gemini's advanced reasoning capabilities"
-    ],
-    tools=[DuckDuckGoTools()],
-    knowledge=knowledge_base,
-    search_knowledge=True,
-    show_tool_calls=True,
-    markdown=True,
-    memory=create_memory("gemini_agent"),
-    storage=create_storage("gemini_agent"),
-    add_history_to_messages=True,
-    num_history_responses=5,
-    read_chat_history=True,
-)
 
 # Anthropic Claude Agent
 claude_agent = Agent(
@@ -141,36 +103,12 @@ deepseek_4o_agent = Agent(
     delay_between_retries=5,
 )
 
-deepseek_4o_mini_agent = Agent(
-    name="DeepSeek OpenAI Mini",
-    agent_id="deepseek-kb-agent-mini",
-    model=OpenAIChat(id="gpt-4o-mini"),
-    reasoning_model=DeepSeek(id="deepseek-reasoner"),
-    role="Expert financial assistant powered by DeepSeek with access to knowledge base and web search capabilities",
-    instructions=[
-        "Leverage DeepSeek's capabilities for detailed financial analysis",
-        "Provide clear and concise financial recommendations"
-    ],
-    tools=[DuckDuckGoTools()],
-    knowledge=knowledge_base,
-    search_knowledge=True,
-    show_tool_calls=True,
-    markdown=True,
-    memory=create_memory("deepseek_agent"),
-    storage=create_storage("deepseek_agent"),
-    add_history_to_messages=True,
-    num_history_responses=5,
-    read_chat_history=True,
-    exponential_backoff=True,
-    delay_between_retries=2
-)
 
 # Gemini Reasoning Agent
-deepseek_gemini_agent = Agent(
+pure_deepseek_agent = Agent(
     name="Deepseek Gemini",
     agent_id="deepseek-gemini-agent",
-    model=Gemini(id="gemini-2.0-flash"),
-    reasoning_model=DeepSeek(id="deepseek-reasoner"),
+    model=DeepSeek(id="deepseek-reasoner"),
     role="Expert financial assistant powered by Gemini's reasoning capabilities with access to knowledge base and web search",
     instructions=[
         "Leverage Gemini's advanced reasoning capabilities for detailed financial analysis",
@@ -186,6 +124,51 @@ deepseek_gemini_agent = Agent(
     add_history_to_messages=True,
     num_history_responses=5,
     read_chat_history=True,
+)
+
+financial_csv = Path("./query_results.csv")
+
+new_csvQueryagent = Agent(
+    model=DeepSeek(id="deepseek-reasoner"),
+    tools=[CsvTools(csvs=["query_results.csv"])],
+    markdown=True,
+    instructions=[
+        # Data accuracy and validation
+        "CRITICAL: Only use data that is actually present in the CSV file",
+        "Never make assumptions or use external knowledge about companies",
+        "If data is not available in the CSV, clearly state 'Data not available'",
+        
+        # Financial analysis workflow
+        "FINANCIAL ANALYSIS WORKFLOW:",
+        "1. First, examine available columns using get_columns()",
+        "2. Query the specific company data from the CSV",
+        "3. Present key financial metrics clearly",
+        "4. Provide analysis based only on available data",
+        
+        # Query best practices
+        "CSV QUERY GUIDELINES:",
+        "- Use exact column names wrapped in double quotes",
+        "- Try exact company name match first",
+        "- If no results, try partial matching with LIKE operator",
+        "- Always verify data exists before analyzing",
+        
+        # Financial analysis focus
+        "FINANCIAL ANALYSIS REQUIREMENTS:",
+        "- Present key financial ratios and metrics",
+        "- Compare performance indicators when multiple periods available",
+        "- Highlight significant financial trends or patterns",
+        "- Provide clear interpretation of financial health",
+        "- Use proper financial terminology",
+        
+        # Data presentation
+        "PRESENTATION STANDARDS:",
+        "- Show actual values from CSV without modification",
+        "- Use clear formatting for financial figures",
+        "- Organize analysis in logical sections (Revenue, Profitability, etc.)",
+        "- Provide context for financial metrics when possible",
+        "- State data source and time period clearly"
+    ],
+    description="Financial analyst specializing in CSV-based financial data analysis"
 )
 
 # Create playground with all agents
