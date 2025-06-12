@@ -107,12 +107,12 @@ deepseek_4o_agent = Agent(
 
 # Gemini Reasoning Agent
 pure_deepseek_agent = Agent(
-    name="Deepseek Gemini",
+    name="Deepseek Pure",
     agent_id="deepseek-gemini-agent",
     model=DeepSeek(id="deepseek-reasoner"),
-    role="Expert financial assistant powered by Gemini's reasoning capabilities with access to knowledge base and web search",
+    role="Expert financial assistant powered by Deepseek's reasoning capabilities with access to knowledge base and web search",
     instructions=[
-        "Leverage Gemini's advanced reasoning capabilities for detailed financial analysis",
+        "Leverage Deepseek's advanced reasoning capabilities for detailed financial analysis",
         "Provide clear and concise financial recommendations with strong analytical backing"
     ],
     tools=[DuckDuckGoTools()],
@@ -174,9 +174,9 @@ new_csvQueryagent = Agent(
 
 # Create playground with all agents
 playground = Playground(
-    agents=[openai_agent, gemini_agent, claude_agent, deepseek_4o_agent, deepseek_4o_mini_agent, deepseek_gemini_agent],
+    agents=[claude_agent, deepseek_4o_agent, pure_deepseek_agent, new_csvQueryagent],
     name="Multi-Model Financial Analysis Playground",
-    description="Compare financial analysis capabilities across OpenAI GPT-4o, Google Gemini, Anthropic Claude, DeepSeek, and Gemini Reasoning",
+    description="Compare financial analysis capabilities across Anthropic Claude, DeepSeek, and DeepSeek Pure",
     app_id="multi-model-kb-agent-playground",
 )
 
