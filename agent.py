@@ -1,5 +1,5 @@
 from agno.agent import Agent
-from agno.playground import Playground, serve_playground_app
+from agno.playground import Playground
 from agno.models.openai import OpenAIChat
 from agno.models.google.gemini import Gemini
 from agno.models.anthropic import Claude
@@ -10,6 +10,7 @@ import os
 import sys
 from agno.tools.csv_toolkit import CsvTools
 from pathlib import Path
+import uvicorn
 
 from agno.memory.agent import AgentMemory
 from agno.memory.db.postgres import PgMemoryDb
@@ -55,8 +56,7 @@ def create_storage(agent_name):
         auto_upgrade_schema=True
     )
 
-
-# Anthropic Claude Agent
+# Your agents (keeping them as they are)
 claude_agent = Agent(
     name="Claude Knowledge Agent",
     agent_id="claude-kb-agent",
@@ -79,7 +79,6 @@ claude_agent = Agent(
     read_chat_history=True,
 )
 
-# DeepSeek Agent
 deepseek_4o_agent = Agent(
     name="DeepSeek OpenAI",
     agent_id="deepseek-kb-agent",
@@ -104,8 +103,6 @@ deepseek_4o_agent = Agent(
     delay_between_retries=5,
 )
 
-
-# Gemini Reasoning Agent
 pure_deepseek_agent = Agent(
     name="Deepseek Pure",
     agent_id="deepseek-gemini-agent",
@@ -127,9 +124,9 @@ pure_deepseek_agent = Agent(
     read_chat_history=True,
 )
 
-financial_csv = Path("./query_results.csv")
-
 new_csvQueryagent = Agent(
+    name="CSV Financial Analyst",
+    agent_id="csv-financial-agent",
     model=DeepSeek(id="deepseek-reasoner"),
     tools=[CsvTools(csvs=["query_results.csv"])],
     markdown=True,
@@ -182,15 +179,25 @@ playground = Playground(
 
 app = playground.get_app()
 
+# Add health check endpoints
+@app.get("/health")
+async def health_check():
+    return {"status": "healthy", "message": "Financial Analysis Playground is running"}
+
+@app.get("/")
+async def root():
+    return {"message": "Financial Analysis Playground", "status": "running", "agents": 4}
+
 # For production deployment
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 7777))
     host = os.getenv("HOST", "0.0.0.0")
     
-    # Fix: Use the correct module name or use the app directly
-    serve_playground_app(
-        app,  # Pass the app directly instead of string reference
-        reload=False,
+    print(f"🚀 Starting server on {host}:{port}")
+    
+    uvicorn.run(
+        app,
+        host=host,
         port=port,
-        host=host
+        reload=False
     )
