@@ -23,7 +23,7 @@ db_url = os.getenv("DATABASE_URL")
 # ✅ Load the knowledge base with proper error handling
 try:
     print("🔄 Loading knowledge base...")
-    knowledge_base.load(recreate=True)
+    knowledge_base.load(recreate=False)
     print("✅ Knowledge base loaded successfully")
 except Exception as e:
     print(f"❌ Failed to load knowledge base: {e}")

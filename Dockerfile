@@ -10,7 +10,7 @@ RUN pip install -r requirements.txt
 # Copy your application files
 COPY agent.py .
 COPY knowledge_base.py .
-COPY query-results.csv .
+COPY query_results.csv .
 
 # Expose port
 EXPOSE 7777
