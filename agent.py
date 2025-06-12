@@ -216,15 +216,10 @@ if __name__ == "__main__":
     port = int(os.getenv("PORT", 7777))
     host = os.getenv("HOST", "0.0.0.0")
     
-    print(f"🚀 Starting server on {host}:{port}")
-    print("📍 Playground endpoints will be available at:")
-    print(f"   - Status: http://{host}:{port}/v1/playground/status")
-    print(f"   - Agents: http://{host}:{port}/v1/playground/agents")
-    print(f"   - Health: http://{host}:{port}/health")
-    
-    uvicorn.run(
-        app,
-        host=host,
+    # Fix: Use the correct module name or use the app directly
+    serve_playground_app(
+        app,  # Pass the app directly instead of string reference
+        reload=False,
         port=port,
-        reload=False
+        host=host
     )
