@@ -184,14 +184,13 @@ app = playground.get_app()
 
 # For production deployment
 if __name__ == "__main__":
-    import uvicorn
-    
     port = int(os.getenv("PORT", 7777))
     host = os.getenv("HOST", "0.0.0.0")
     
-    uvicorn.run(
-        app,
-        host=host,
+    # Fix: Use the correct module name or use the app directly
+    serve_playground_app(
+        app,  # Pass the app directly instead of string reference
+        reload=False,
         port=port,
-        reload=False
+        host=host
     )
