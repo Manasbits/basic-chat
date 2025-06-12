@@ -177,7 +177,17 @@ playground = Playground(
     app_id="multi-model-kb-agent-playground",
 )
 
-app = playground.get_app()
+# Get the app with proper configuration
+app = playground.get_app(use_async=True, prefix="/v1")
+
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # In production, specify your domain
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Add health check endpoints
 @app.get("/health")
@@ -188,12 +198,28 @@ async def health_check():
 async def root():
     return {"message": "Financial Analysis Playground", "status": "running", "agents": 4}
 
+# Add a test endpoint to verify the playground is working
+@app.get("/test")
+async def test_endpoint():
+    return {
+        "message": "Test endpoint working",
+        "playground_endpoints": [
+            "/v1/playground/status",
+            "/v1/playground/agents",
+            "/v1/playground/agents/chat"
+        ]
+    }
+
 # For production deployment
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 7777))
     host = os.getenv("HOST", "0.0.0.0")
     
     print(f"🚀 Starting server on {host}:{port}")
+    print("📍 Playground endpoints will be available at:")
+    print(f"   - Status: http://{host}:{port}/v1/playground/status")
+    print(f"   - Agents: http://{host}:{port}/v1/playground/agents")
+    print(f"   - Health: http://{host}:{port}/health")
     
     uvicorn.run(
         app,
