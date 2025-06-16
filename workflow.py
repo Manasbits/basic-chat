@@ -11,7 +11,8 @@ from agno.tools.duckduckgo import DuckDuckGoTools
 from agno.tools.reasoning import ReasoningTools
 from dotenv import load_dotenv
 from agno.tools.tavily import TavilyTools
-from agno.app.agui.app import AGUIApp
+from agno.playground import Playground
+import os
 
 load_dotenv()
 
@@ -200,21 +201,42 @@ class StockAnalysisWorkflow(Workflow):
             """
         )
 
-# Create AGUI App
-agui_app = AGUIApp(
-    agent=StockAnalysisWorkflow(),
+# Create workflow agent
+workflow_agent = Agent(
     name="Stock Analysis Expert",
-    app_id="stock_analysis_expert",
-    description="A comprehensive stock analysis system that provides detailed recommendations based on financial data, industry context, and market trends.",
+    agent_id="stock-analysis-expert",
+    model=DeepSeek(id="deepseek-reasoner"),
+    role="Expert stock analyst with comprehensive analysis capabilities",
+    instructions=[
+        "Analyze stocks using financial data, industry context, and market trends",
+        "Provide detailed recommendations with clear rationale",
+        "Consider both quantitative metrics and qualitative factors"
+    ],
+    tools=[CsvTools(csvs=[Path("query_results.csv")]), TavilyTools()],
+    show_tool_calls=True,
+    markdown=True
 )
 
-app = agui_app.get_app()
+# Create playground
+playground = Playground(
+    agents=[workflow_agent],
+    name="Stock Analysis Playground",
+    description="A comprehensive stock analysis system that provides detailed recommendations based on financial data, industry context, and market trends.",
+    app_id="stock-analysis-playground",
+)
 
+# Get the app with proper configuration
+app = playground.get_app(use_async=True, prefix="/v1")
+
+# For production deployment
 if __name__ == "__main__":
-    # For playground usage
-    agui_app.serve(app="workflow:app", port=8000, reload=True)
+    port = int(os.getenv("PORT", 8000))
+    host = os.getenv("HOST", "0.0.0.0")
     
-    # For direct usage
-    # workflow = StockAnalysisWorkflow()
-    # for response in workflow.run_workflow("ANGELONE"):
-    #     print(response.content)
+    # Use playground.serve()
+    playground.serve(
+        app="__main__:app",  # Reference to the app in this module
+        reload=False,
+        port=port,
+        host=host
+    )
